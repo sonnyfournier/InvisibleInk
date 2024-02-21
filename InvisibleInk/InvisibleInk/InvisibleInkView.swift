@@ -43,9 +43,11 @@ class InvisibleInkView: UIView {
 
     // MARK: - UI elements
     private let coverView = CoverView()
-    private let coverContainerView = UIView()
-    private let maskedContentContainerView = UIView()
-    private let hiddenContentContainerView = UIView()
+    private var coverMaskView: UIView!
+
+    private var maskedContentView: UIView!
+    private var hiddenContentView: UIView!
+
     private let canvasMaskView = CanvasView()
 
     // MARK: Properties
@@ -66,7 +68,9 @@ class InvisibleInkView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        canvasMaskView.frame = maskedContentContainerView.bounds
+        maskedContentView.mask = canvasMaskView
+        canvasMaskView.frame = maskedContentView.bounds
+        coverView.particlesView.mask = coverMaskView
     }
 
     // MARK: UI setup
@@ -78,73 +82,60 @@ class InvisibleInkView: UIView {
         canvasMaskView.backgroundColor = .clear
         canvasMaskView.lineWidth = scratchWidth
 
-        addSubview(coverContainerView)
-        coverContainerView.addSubview(coverView)
-
-        maskedContentContainerView.mask = canvasMaskView
-        addSubview(maskedContentContainerView)
-
-        hiddenContentContainerView.alpha = 0
-        addSubview(hiddenContentContainerView)
+        addSubview(coverView)
     }
 
     // MARK: - Constraints setup
     private func setupConstaints() {
-        coverContainerView.translatesAutoresizingMaskIntoConstraints = false
-        coverContainerView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        coverContainerView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        coverContainerView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        coverContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-
         coverView.translatesAutoresizingMaskIntoConstraints = false
         coverView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         coverView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         coverView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         coverView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-
-        maskedContentContainerView.translatesAutoresizingMaskIntoConstraints = false
-        maskedContentContainerView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        maskedContentContainerView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        maskedContentContainerView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        maskedContentContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-
-        hiddenContentContainerView.translatesAutoresizingMaskIntoConstraints = false
-        hiddenContentContainerView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        hiddenContentContainerView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        hiddenContentContainerView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        hiddenContentContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
 
     // MARK: - Functions
     public func loadViews() {
         guard let maskedContentView = delegate?.contentView(for: self),
-              let hiddenContentView = delegate?.contentView(for: self) else {
+              let hiddenContentView = delegate?.contentView(for: self),
+              let coverMaskView = delegate?.contentView(for: self) else {
             fatalError("It seems like you forgot to implement the delegate")
         }
 
-        maskedContentContainerView.addSubview(maskedContentView)
-        maskedContentView.translatesAutoresizingMaskIntoConstraints = false
-        maskedContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        maskedContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        maskedContentView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        maskedContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        self.maskedContentView = maskedContentView
+        addSubview(self.maskedContentView)
+        self.maskedContentView.translatesAutoresizingMaskIntoConstraints = false
+        self.maskedContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        self.maskedContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        self.maskedContentView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.maskedContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
 
-        hiddenContentContainerView.addSubview(hiddenContentView)
-        hiddenContentView.translatesAutoresizingMaskIntoConstraints = false
-        hiddenContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        hiddenContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        hiddenContentView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        hiddenContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        self.hiddenContentView = hiddenContentView
+        self.hiddenContentView.alpha = 0
+        addSubview(self.hiddenContentView)
+        self.hiddenContentView.translatesAutoresizingMaskIntoConstraints = false
+        self.hiddenContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        self.hiddenContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        self.hiddenContentView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.hiddenContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+
+        self.coverMaskView = coverMaskView
+        addSubview(self.coverMaskView)
+        self.coverMaskView.translatesAutoresizingMaskIntoConstraints = false
+        self.coverMaskView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        self.coverMaskView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        self.coverMaskView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.coverMaskView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
 
     func revealContent() {
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
-            self?.hiddenContentContainerView.alpha = 1
+            self?.hiddenContentView.alpha = 1
         }, completion: { [weak self] _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                 self?.canvasMaskView.removeAllLines()
                 UIView.animate(withDuration: 2, animations: { [weak self] in
-                    self?.hiddenContentContainerView.alpha = 0
+                    self?.hiddenContentView.alpha = 0
                 })
             }
         })
