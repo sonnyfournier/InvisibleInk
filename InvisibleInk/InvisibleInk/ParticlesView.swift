@@ -15,6 +15,7 @@ class ParticlesView: UIView {
     var particlesScene = ParticlesScene()
 
     // MARK: - Properties
+    var particlesColor: UIColor? { didSet { particlesScene.particlesColor = particlesColor } }
     var tappedPoint: CGPoint = .zero
 
     // MARK: - Initialization
@@ -37,6 +38,8 @@ class ParticlesView: UIView {
         addSubview(spriteView)
 
         spriteView.presentScene(particlesScene)
+
+        registerForTraitChanges([UITraitUserInterfaceStyle.self], target: self, action: #selector(handleUserInterfaceStyleUpdate))
     }
 
     // MARK: - Constraints setup
@@ -46,6 +49,11 @@ class ParticlesView: UIView {
         spriteView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         spriteView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         spriteView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+    }
+
+    // MARK: - Actions
+    @objc private func handleUserInterfaceStyleUpdate() {
+        particlesScene.particlesColor = particlesColor != nil ? particlesColor : .label
     }
 
     // MARK: - Functions

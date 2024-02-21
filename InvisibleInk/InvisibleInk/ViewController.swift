@@ -34,6 +34,7 @@ class ViewController: UIViewController {
         view.backgroundColor = .systemBackground
 
         invisibleInkView.delegate = self
+        // invisibleInkView.showBlurView = true
         view.addSubview(invisibleInkView)
     }
 
@@ -50,6 +51,11 @@ class ViewController: UIViewController {
 extension ViewController: InvisibleInkViewDelegate {
 
     func contentView(for invisibleInkView: InvisibleInkView) -> UIView {
+        let imageView = UIImageView(image: UIImage(named: "Test"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.heightAnchor.constraint(equalToConstant: 640).isActive = true
+        // return imageView
+
         let contentView = ContentView()
         return contentView
     }

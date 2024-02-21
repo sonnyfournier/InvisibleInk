@@ -53,7 +53,8 @@ class InvisibleInkView: UIView {
     // MARK: Properties
     weak var delegate: InvisibleInkViewDelegate? { didSet { loadViews() } }
     var scratchWidth: CGFloat = 50 { didSet { canvasMaskView.lineWidth = scratchWidth } }
-    var shouldVibrate: Bool = true
+    var showBlurView: Bool = false { didSet { coverView.showBlurView = showBlurView } }
+    private var shouldVibrate: Bool = true
 
     // MARK: Initialization
     override init(frame: CGRect) {
@@ -99,7 +100,8 @@ class InvisibleInkView: UIView {
     public func loadViews() {
         guard let maskedContentView = delegate?.contentView(for: self),
               let hiddenContentView = delegate?.contentView(for: self),
-              let coverMaskView = delegate?.contentView(for: self) else {
+              let coverMaskView = delegate?.contentView(for: self),
+              let coverBlurredView = delegate?.contentView(for: self) else {
             fatalError("It seems like you forgot to implement the delegate")
         }
 
@@ -127,6 +129,8 @@ class InvisibleInkView: UIView {
         self.coverMaskView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         self.coverMaskView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         self.coverMaskView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+
+        coverView.contentView = coverBlurredView
     }
 
     private func revealContent() {

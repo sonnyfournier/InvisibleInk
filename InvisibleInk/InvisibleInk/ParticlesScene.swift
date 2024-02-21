@@ -11,8 +11,9 @@ import SpriteKit
 class ParticlesScene: SKScene {
 
     // MARK: - Properties
-    private let emitterNode = SKEmitterNode(fileNamed: "MyParticle.sks")!
+    let emitterNode = SKEmitterNode(fileNamed: "MyParticle.sks")!
     let gravity = SKFieldNode.radialGravityField()
+    var particlesColor: UIColor? { didSet { emitterNode.particleColor = particlesColor ?? .label } }
 
     // MARK: - Life cycle
     override func sceneDidLoad() {
