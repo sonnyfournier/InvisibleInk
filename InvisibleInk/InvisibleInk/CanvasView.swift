@@ -140,13 +140,8 @@ class CanvasView: UIView {
         scratchedPercentage = percentage
     }
 
-    // TODO: Raneme and move this
-    func CGPointDistance(from: CGPoint, to: CGPoint) -> CGFloat {
-        return sqrt(CGPointDistanceSquared(from: from, to: to))
-    }
-
-    func CGPointDistanceSquared(from: CGPoint, to: CGPoint) -> CGFloat {
-        return (from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y)
+    func pointDistance(from firstPoint: CGPoint, to secondPoint: CGPoint) -> CGFloat {
+        return sqrt((firstPoint.x - secondPoint.x) * (firstPoint.x - secondPoint.x) + (firstPoint.y - secondPoint.y) * (firstPoint.y - secondPoint.y))
     }
 
     private func calculPathArea(from points: [CGPoint]) -> CGFloat {
@@ -159,7 +154,7 @@ class CanvasView: UIView {
             guard firstIndex + 1 < insidePoints.count else { break }
             for secondIndex in (firstIndex + 1)..<insidePoints.count {
                 guard insidePoints.count > secondIndex else { break }
-                if CGPointDistance(from: insidePoints[secondIndex], to: insidePoints[firstIndex]) < lineWidth / 2 {
+                if pointDistance(from: insidePoints[secondIndex], to: insidePoints[firstIndex]) < lineWidth / 2 {
                     insidePoints.remove(at: secondIndex)
                 }
             }

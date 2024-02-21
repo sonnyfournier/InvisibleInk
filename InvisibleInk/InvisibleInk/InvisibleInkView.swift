@@ -137,8 +137,7 @@ class InvisibleInkView: UIView {
         hiddenContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
 
-    // TODO: Rename
-    func test() {
+    func revealContent() {
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.hiddenContentContainerView.alpha = 1
         }, completion: { [weak self] _ in
@@ -160,7 +159,7 @@ extension InvisibleInkView: CanvasViewDelegate {
     }
 
     func canvasViewDidAddLine(_ view: CanvasView, to point: CGPoint) {
-        if view.scratchedPercentage > 60 { test() }
+        if view.scratchedPercentage > 60 { revealContent() }
         coverView.particlesView.startGravity(at: point)
         delegate?.invisibleInkView?(self, didScratchTo: point)
     }
