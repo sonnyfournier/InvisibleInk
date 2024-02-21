@@ -53,6 +53,7 @@ class InvisibleInkView: UIView {
     // MARK: Properties
     weak var delegate: InvisibleInkViewDelegate? { didSet { loadViews() } }
     var scratchWidth: CGFloat = 50 { didSet { canvasMaskView.lineWidth = scratchWidth } }
+    var shouldVibrate: Bool = true
 
     // MARK: Initialization
     override init(frame: CGRect) {
@@ -128,7 +129,12 @@ class InvisibleInkView: UIView {
         self.coverMaskView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
     }
 
-    func revealContent() {
+    private func revealContent() {
+        if shouldVibrate {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            shouldVibrate = false
+        }
+
         UIView.animate(withDuration: 0.5, animations: { [weak self] in
             self?.hiddenContentView.alpha = 1
         }, completion: { [weak self] _ in
@@ -136,9 +142,20 @@ class InvisibleInkView: UIView {
                 self?.canvasMaskView.removeAllLines()
                 UIView.animate(withDuration: 2, animations: { [weak self] in
                     self?.hiddenContentView.alpha = 0
+                    self?.shouldVibrate = true
                 })
             }
         })
+    }
+
+    private func vibrateIfNeeded() {
+        if shouldVibrate {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            shouldVibrate = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                self?.shouldVibrate = true
+            }
+        }
     }
 
 }
@@ -152,6 +169,7 @@ extension InvisibleInkView: CanvasViewDelegate {
     func canvasViewDidAddLine(_ view: CanvasView, to point: CGPoint) {
         if view.scratchedPercentage > 60 { revealContent() }
         coverView.particlesView.startGravity(at: point)
+        vibrateIfNeeded()
         delegate?.invisibleInkView?(self, didScratchTo: point)
     }
 

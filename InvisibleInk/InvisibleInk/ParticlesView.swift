@@ -16,7 +16,6 @@ class ParticlesView: UIView {
 
     // MARK: - Properties
     var tappedPoint: CGPoint = .zero
-    var shouldVibrate: Bool = true
 
     // MARK: - Initialization
     override init(frame: CGRect) {
@@ -55,14 +54,6 @@ class ParticlesView: UIView {
         particlesScene.gravity.position = convertedPoint
         particlesScene.gravity.strength = -40
         particlesScene.gravity.region = SKRegion(radius: 30)
-
-        if shouldVibrate {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            shouldVibrate = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                self?.shouldVibrate = true
-            }
-        }
     }
 
     func stopGravity() {
