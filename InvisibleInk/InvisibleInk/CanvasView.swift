@@ -72,7 +72,6 @@ class CanvasView: UIView {
             closePath()
             delegate?.canvasViewDidEndDrawing(self)
 
-            // TODO: Is the user is "drawing" another line then invalidate the timer
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
                 guard let self = self else { return }
                 self.timer = Timer.scheduledTimer(timeInterval: 0.03, target: self,
